@@ -1,1 +1,261 @@
-file 1 for git test
+AZ Commands:
+
+
+
+https://git.devops.buhlergroup.com/iot-environment/azure-config.git
+
+X-> connect-azAccount  -TenantID 'ec64c433-1ee8-4dbd-837a-39f56c7cdcea'
+$context = Get-AzSubscription -SubscriptionId '5de9067e-5fe1-4983-9f28-9839e7e64dfc' -TenantID 'ec64c433-1ee8-4dbd-837a-39f56c7cdcea'
+Set-AzContext $context
+
+Buhler Subscription ID:
+ec64c433-1ee8-4dbd-837a-39f56c7cdcea
+
+IoT Dev Subscription ID: 5de9067e-5fe1-4983-9f28-9839e7e64dfc
+Create ARM template for Azure storage account (backup storage account) in azure-config
+
+Get-AzSubscription -TenantID 'ec64c433-1ee8-4dbd-837a-39f56c7cdcea'
+
+
+disconnect-AzAccount
+connect-AzAccount -TenantID 'ec64c433-1ee8-4dbd-837a-39f56c7cdcea'
+Get-AzSubscription -TenantID 'ec64c433-1ee8-4dbd-837a-39f56c7cdcea'
+$context = Get-AzSubscription -SubscriptionId '5de9067e-5fe1-4983-9f28-9839e7e64dfc' -TenantID 'ec64c433-1ee8-4dbd-837a-39f56c7cdcea'
+Set-AzContext $context
+
+
+------------------------------------------------------
+connect-azAccount
+
+
+WARNING: To sign in, use a web browser to open the page https://microsoft.com/devicelogin and enter the code H4BNAVQDJ to authenticate.
+
+Account                             SubscriptionName TenantId                             Environment
+-------                             ---------------- --------                             -----------
+ajaya_kumar.pradhan@buhlergroup.com IoT TESTING      ec64c433-1ee8-4dbd-837a-39f56c7cdcea AzureCloud
+
+PS C:\Users\ajaya.pradhan> Get-AzSubscription
+
+Name           Id                                   TenantId                             State
+----           --                                   --------                             -----
+IoT TESTING    5b1c9298-ce3c-4eaf-ac2f-f798e22cee88 ec64c433-1ee8-4dbd-837a-39f56c7cdcea Enabled
+IoT ACCEPTANCE ab0adf72-fd5d-47fc-8198-b95ad43214b0 ec64c433-1ee8-4dbd-837a-39f56c7cdcea Enabled
+IoT DEMO       fd95535e-a273-4be8-9afd-2604ef28f82b ec64c433-1ee8-4dbd-837a-39f56c7cdcea Enabled
+IoT PROD       154724a8-30fd-44b5-85c6-bfb9cad3ae77 ec64c433-1ee8-4dbd-837a-39f56c7cdcea Enabled
+IoT DEV        5de9067e-5fe1-4983-9f28-9839e7e64dfc ec64c433-1ee8-4dbd-837a-39f56c7cdcea Enabled
+
+
+Get-AzSubscription -TenantId "ec64c433-1ee8-4dbd-837a-39f56c7cdcea"
+Name           Id                                   TenantId                             State
+----           --                                   --------                             -----
+IoT TESTING    5b1c9298-ce3c-4eaf-ac2f-f798e22cee88 ec64c433-1ee8-4dbd-837a-39f56c7cdcea Enabled
+IoT ACCEPTANCE ab0adf72-fd5d-47fc-8198-b95ad43214b0 ec64c433-1ee8-4dbd-837a-39f56c7cdcea Enabled
+IoT DEMO       fd95535e-a273-4be8-9afd-2604ef28f82b ec64c433-1ee8-4dbd-837a-39f56c7cdcea Enabled
+IoT PROD       154724a8-30fd-44b5-85c6-bfb9cad3ae77 ec64c433-1ee8-4dbd-837a-39f56c7cdcea Enabled
+IoT DEV        5de9067e-5fe1-4983-9f28-9839e7e64dfc ec64c433-1ee8-4dbd-837a-39f56c7cdcea Enabled
+
+
+Get-AzSubscription -SubscriptionId "5b1c9298-ce3c-4eaf-ac2f-f798e22cee88" -TenantId "ec64c433-1ee8-4dbd-837a-39f56c7cdcea"
+
+Name        Id                                   TenantId                             State
+----        --                                   --------                             -----
+IoT TESTING 5b1c9298-ce3c-4eaf-ac2f-f798e22cee88 ec64c433-1ee8-4dbd-837a-39f56c7cdcea Enabled
+
+##Change the current context to use a specific subscription
+Get-AzSubscription -SubscriptionId "5b1c9298-ce3c-4eaf-ac2f-f798e22cee88" -TenantId "ec64c433-1ee8-4dbd-837a-39f56c7cdcea" | Set-AzContext
+
+
+Get-AzResourceGroup 
+
+
+PS C:\Users\ajaya.pradhan> Get-AzResourceGroup -Name "buhler-uat-storage"
+
+ResourceGroupName : buhler-uat-storage
+Location          : westeurope
+ProvisioningState : Succeeded
+Tags              :
+ResourceId        : /subscriptions/5b1c9298-ce3c-4eaf-ac2f-f798e22cee88/resourceGroups/buhler-uat-storage
+
+
+
+PS C:\Users\ajaya.pradhan> Get-AzResourceGroup -Name buhler-uat-test*
+
+ResourceGroupName : buhler-uat-testsystem
+Location          : westeurope
+ProvisioningState : Succeeded
+Tags              :
+ResourceId        : /subscriptions/5b1c9298-ce3c-4eaf-ac2f-f798e22cee88/resourceGroups/buhler-uat-testsystem
+
+
+New-AzResourceGroup training-resources-rg-01 "South Central US"
+New-AzResourceGroup -Name learning-resources-rg-01 -Location "South Central US" -Tag @{Empty=$null; Department="Marketing"}
+
+Empty: The first tag, named Empty, can be used to identify resource groups that have no resources.
+
+
+## Create a Resouce:
+New-AzResource -Location "West US" -Properties @{test="test"} -ResourceName TestSite06 -ResourceType microsoft.web/sites -ResourceGroupName ResourceGroup11 -Force
+
+
+Get-AzSubscription | ForEach-Object {
+    $subscriptionName = $_.Name
+    Set-AzContext -SubscriptionId $_.SubscriptionId
+    (Get-AzResourceGroup).ResourceGroupName | ForEach-Object {     
+        [PSCustomObject] @{
+            Subscription = $subscriptionName
+            ResourceGroup = $_
+        }
+    }
+}
+
+## Get the resources in specific ResourceGroup 
+Get-AzResource -ResourceGroupName buhler-uat-storage | ft
+
+
+## get specific resource (first column)
+Get-AzResource -Name "testVM" | f1
+
+Name              : testVM
+ResourceGroupName : testRG
+ResourceType      : Microsoft.Compute/virtualMachines
+Location          : westus
+ResourceId        : /subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/testRG/providers/Microsoft.Compute/virtualMachines/testVM
+Tags              :
+                    Name    Value
+                    ======  ========
+                    Dept    IT
+                    Year    2002
+                    Status  Approved
+					
+					
+
+## get resource starts with (format table)
+Get-AzResource -Name test* | ft
+
+Name    ResourceGroupName  ResourceType                      Location
+----    -----------------  ------------                      --------
+testVM  testRG             Microsoft.Compute/virtualMachines westus
+testKV  otherRG            Microsoft.KeyVault/vaults         eastus
+testVM2 otherResourceGroup Microsoft.Compute/virtualMachines eastus
+
+
+PS C:\> Get-AzResource -ResourceType Microsoft.Compute/virtualMachines | ft
+
+Name    ResourceGroupName  ResourceType                      Location
+----    -----------------  ------------                      --------
+testVM  testRG             Microsoft.Compute/virtualMachines westus
+testVM2 otherResourceGroup Microsoft.Compute/virtualMachines eastus
+
+
+PS C:\> Get-AzResource -ResourceType Microsoft.Compute/virtualMachines | ft
+
+Name    ResourceGroupName  ResourceType                      Location
+----    -----------------  ------------                      --------
+testVM  testRG             Microsoft.Compute/virtualMachines westus
+testVM2 otherResourceGroup Microsoft.Compute/virtualMachines eastus
+
+------------------------------------------------------------------------------
+PS Script for finding text, count, duplicate, unique 
+-----------------------------------------------------------------------------
+Script-1 : unique text 
+--------------------------------------------------------------------------
+
+
+
+$File = Get-content -Path .\files\iot-edge-module-opc-ua-10m-700065456.json -Force
+
+
+foreach($line in $File){
+$line = $line.trim()
+#if( !($line.contains('{') -or $line.contains('}') )){
+if( $line.contains('name') ){
+	$ind1 = $line.indexOf(':')
+	#$line1=$line.substring(1)
+	$nameval = $line.substring($ind1+1)
+	$nameval1 = $nameval.trim()
+
+	$len = $nameval1.length
+	$nameval2 = $nameval1.substring(1, $len-3)
+	Add-Content -Path .\files\namefiles\temp-10m-Parameters-names.txt -Value $nameval2 -Force
+	#write-Host $nameval2
+}
+}
+
+
+$filesdata = Get-content -Path .\files\namefiles\temp-10m-Parameters-names.txt
+Write-Host "Total number of Names= " $filesdata.length
+
+$sorted_filesdata = $filesdata | sort -unique
+
+Write-Host "Number of Unique Names= " $sorted_filesdata.length
+
+foreach($name in $sorted_filesdata){
+Add-Content -Path .\files\namefiles\10m-Parameters-unique-names.txt -Value $name -Force
+}
+
+-----------------------------------------------
+Script-2: Duplicate text and count of occurences
+-----------------------------------------------
+
+
+
+$File = Get-content -Path .\files\iot-edge-module-opc-ua-1m-700065456.json -Force
+
+
+foreach($line in $File){
+$line = $line.trim()
+#if( !($line.contains('{') -or $line.contains('}') )){
+if( $line.contains('name') ){
+	$ind1 = $line.indexOf(':')
+	#$line1=$line.substring(1)
+	$nameval = $line.substring($ind1+1)
+	$nameval1 = $nameval.trim()
+
+	$len = $nameval1.length
+	$nameval2 = $nameval1.substring(1, $len-3)
+	Add-Content -Path .\files\namefiles1\temp-1m-statistics-names.txt -Value $nameval2 -Force
+	#write-Host $nameval2
+}
+}
+
+
+$filesdata = Get-content -Path .\files\namefiles1\temp-1m-statistics-names.txt
+Write-Host "Total number of Names= " $filesdata.length
+
+
+
+
+$sorted_filesdata = $filesdata | sort
+
+$temp = ""
+[int]$counter = 0
+[int]$count=0
+foreach($name in $sorted_filesdata){
+	
+	#if($count -eq 0){$temp = $name}
+	if($counter -ne 0 -and $name -ne $temp){
+		$dup_name=$temp+"#"+$counter
+		Add-Content -Path .\files\namefiles1\1m-statistics-unique-names.txt -Value $dup_name -Force
+		$counter = 0
+		Write-Host "Names: " $dup_name
+		$count++
+	}
+	
+	$counter++
+	$temp = $name
+}
+	$dup_name=$temp+"#"+$counter
+	Add-Content -Path .\files\namefiles1\1m-statistics-unique-names.txt -Value $dup_name -Force
+	Write-Host "Names: " $dup_name
+	$count++
+
+Write-Host "Number of Unique Names= " $count++
+
+
+
+
+
+
+
+
+
