@@ -1,255 +1,297 @@
-AZ Commands:
 
 
-
-https://git.devops.buhlergroup.com/iot-environment/azure-config.git
-
-X-> connect-azAccount  -TenantID 'ec64c433-1ee8-4dbd-837a-39f56c7cdcea'
-$context = Get-AzSubscription -SubscriptionId '5de9067e-5fe1-4983-9f28-9839e7e64dfc' -TenantID 'ec64c433-1ee8-4dbd-837a-39f56c7cdcea'
-Set-AzContext $context
-
-Buhler Subscription ID:
-ec64c433-1ee8-4dbd-837a-39f56c7cdcea
-
-IoT Dev Subscription ID: 5de9067e-5fe1-4983-9f28-9839e7e64dfc
-Create ARM template for Azure storage account (backup storage account) in azure-config
-
-Get-AzSubscription -TenantID 'ec64c433-1ee8-4dbd-837a-39f56c7cdcea'
-
-
-disconnect-AzAccount
-connect-AzAccount -TenantID 'ec64c433-1ee8-4dbd-837a-39f56c7cdcea'
-Get-AzSubscription -TenantID 'ec64c433-1ee8-4dbd-837a-39f56c7cdcea'
-$context = Get-AzSubscription -SubscriptionId '5de9067e-5fe1-4983-9f28-9839e7e64dfc' -TenantID 'ec64c433-1ee8-4dbd-837a-39f56c7cdcea'
-Set-AzContext $context
-
-
-------------------------------------------------------
-connect-azAccount
-
-
-WARNING: To sign in, use a web browser to open the page https://microsoft.com/devicelogin and enter the code H4BNAVQDJ to authenticate.
-
-Account                             SubscriptionName TenantId                             Environment
--------                             ---------------- --------                             -----------
-ajaya_kumar.pradhan@buhlergroup.com IoT TESTING      ec64c433-1ee8-4dbd-837a-39f56c7cdcea AzureCloud
-
-PS C:\Users\ajaya.pradhan> Get-AzSubscription
-
-Name           Id                                   TenantId                             State
-----           --                                   --------                             -----
-IoT TESTING    5b1c9298-ce3c-4eaf-ac2f-f798e22cee88 ec64c433-1ee8-4dbd-837a-39f56c7cdcea Enabled
-IoT ACCEPTANCE ab0adf72-fd5d-47fc-8198-b95ad43214b0 ec64c433-1ee8-4dbd-837a-39f56c7cdcea Enabled
-IoT DEMO       fd95535e-a273-4be8-9afd-2604ef28f82b ec64c433-1ee8-4dbd-837a-39f56c7cdcea Enabled
-IoT PROD       154724a8-30fd-44b5-85c6-bfb9cad3ae77 ec64c433-1ee8-4dbd-837a-39f56c7cdcea Enabled
-IoT DEV        5de9067e-5fe1-4983-9f28-9839e7e64dfc ec64c433-1ee8-4dbd-837a-39f56c7cdcea Enabled
-
-
-Get-AzSubscription -TenantId "ec64c433-1ee8-4dbd-837a-39f56c7cdcea"
-Name           Id                                   TenantId                             State
-----           --                                   --------                             -----
-IoT TESTING    5b1c9298-ce3c-4eaf-ac2f-f798e22cee88 ec64c433-1ee8-4dbd-837a-39f56c7cdcea Enabled
-IoT ACCEPTANCE ab0adf72-fd5d-47fc-8198-b95ad43214b0 ec64c433-1ee8-4dbd-837a-39f56c7cdcea Enabled
-IoT DEMO       fd95535e-a273-4be8-9afd-2604ef28f82b ec64c433-1ee8-4dbd-837a-39f56c7cdcea Enabled
-IoT PROD       154724a8-30fd-44b5-85c6-bfb9cad3ae77 ec64c433-1ee8-4dbd-837a-39f56c7cdcea Enabled
-IoT DEV        5de9067e-5fe1-4983-9f28-9839e7e64dfc ec64c433-1ee8-4dbd-837a-39f56c7cdcea Enabled
-
-
-Get-AzSubscription -SubscriptionId "5b1c9298-ce3c-4eaf-ac2f-f798e22cee88" -TenantId "ec64c433-1ee8-4dbd-837a-39f56c7cdcea"
-
-Name        Id                                   TenantId                             State
-----        --                                   --------                             -----
-IoT TESTING 5b1c9298-ce3c-4eaf-ac2f-f798e22cee88 ec64c433-1ee8-4dbd-837a-39f56c7cdcea Enabled
-
-##Change the current context to use a specific subscription
-Get-AzSubscription -SubscriptionId "5b1c9298-ce3c-4eaf-ac2f-f798e22cee88" -TenantId "ec64c433-1ee8-4dbd-837a-39f56c7cdcea" | Set-AzContext
-
-
-Get-AzResourceGroup 
-
-
-PS C:\Users\ajaya.pradhan> Get-AzResourceGroup -Name "buhler-uat-storage"
-
-ResourceGroupName : buhler-uat-storage
-Location          : westeurope
-ProvisioningState : Succeeded
-Tags              :
-ResourceId        : /subscriptions/5b1c9298-ce3c-4eaf-ac2f-f798e22cee88/resourceGroups/buhler-uat-storage
-
-
-
-PS C:\Users\ajaya.pradhan> Get-AzResourceGroup -Name buhler-uat-test*
-
-ResourceGroupName : buhler-uat-testsystem
-Location          : westeurope
-ProvisioningState : Succeeded
-Tags              :
-ResourceId        : /subscriptions/5b1c9298-ce3c-4eaf-ac2f-f798e22cee88/resourceGroups/buhler-uat-testsystem
-
-
-New-AzResourceGroup training-resources-rg-01 "South Central US"
-New-AzResourceGroup -Name learning-resources-rg-01 -Location "South Central US" -Tag @{Empty=$null; Department="Marketing"}
-
-Empty: The first tag, named Empty, can be used to identify resource groups that have no resources.
-
-
-## Create a Resouce:
-New-AzResource -Location "West US" -Properties @{test="test"} -ResourceName TestSite06 -ResourceType microsoft.web/sites -ResourceGroupName ResourceGroup11 -Force
-
-
-Get-AzSubscription | ForEach-Object {
-    $subscriptionName = $_.Name
-    Set-AzContext -SubscriptionId $_.SubscriptionId
-    (Get-AzResourceGroup).ResourceGroupName | ForEach-Object {     
-        [PSCustomObject] @{
-            Subscription = $subscriptionName
-            ResourceGroup = $_
-        }
-    }
-}
-
-## Get the resources in specific ResourceGroup 
-Get-AzResource -ResourceGroupName buhler-uat-storage | ft
-
-
-## get specific resource (first column)
-Get-AzResource -Name "testVM" | f1
-
-Name              : testVM
-ResourceGroupName : testRG
-ResourceType      : Microsoft.Compute/virtualMachines
-Location          : westus
-ResourceId        : /subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourceGroups/testRG/providers/Microsoft.Compute/virtualMachines/testVM
-Tags              :
-                    Name    Value
-                    ======  ========
-                    Dept    IT
-                    Year    2002
-                    Status  Approved
-					
-					
-
-## get resource starts with (format table)
-Get-AzResource -Name test* | ft
-
-Name    ResourceGroupName  ResourceType                      Location
-----    -----------------  ------------                      --------
-testVM  testRG             Microsoft.Compute/virtualMachines westus
-testKV  otherRG            Microsoft.KeyVault/vaults         eastus
-testVM2 otherResourceGroup Microsoft.Compute/virtualMachines eastus
-
-
-PS C:\> Get-AzResource -ResourceType Microsoft.Compute/virtualMachines | ft
-
-Name    ResourceGroupName  ResourceType                      Location
-----    -----------------  ------------                      --------
-testVM  testRG             Microsoft.Compute/virtualMachines westus
-testVM2 otherResourceGroup Microsoft.Compute/virtualMachines eastus
-
-
-PS C:\> Get-AzResource -ResourceType Microsoft.Compute/virtualMachines | ft
-
-Name    ResourceGroupName  ResourceType                      Location
-----    -----------------  ------------                      --------
-testVM  testRG             Microsoft.Compute/virtualMachines westus
-testVM2 otherResourceGroup Microsoft.Compute/virtualMachines eastus
-
-------------------------------------------------------------------------------
-PS Script for finding text, count, duplicate, unique 
------------------------------------------------------------------------------
-Script-1 : unique text 
---------------------------------------------------------------------------
-
-
-
-$File = Get-content -Path .\files\iot-edge-module-opc-ua-10m-700065456.json -Force
-
-
-foreach($line in $File){
-$line = $line.trim()
-#if( !($line.contains('{') -or $line.contains('}') )){
-if( $line.contains('name') ){
-	$ind1 = $line.indexOf(':')
-	#$line1=$line.substring(1)
-	$nameval = $line.substring($ind1+1)
-	$nameval1 = $nameval.trim()
-
-	$len = $nameval1.length
-	$nameval2 = $nameval1.substring(1, $len-3)
-	Add-Content -Path .\files\namefiles\temp-10m-Parameters-names.txt -Value $nameval2 -Force
-	#write-Host $nameval2
-}
-}
-
-
-$filesdata = Get-content -Path .\files\namefiles\temp-10m-Parameters-names.txt
-Write-Host "Total number of Names= " $filesdata.length
-
-$sorted_filesdata = $filesdata | sort -unique
-
-Write-Host "Number of Unique Names= " $sorted_filesdata.length
-
-foreach($name in $sorted_filesdata){
-Add-Content -Path .\files\namefiles\10m-Parameters-unique-names.txt -Value $name -Force
-}
-
------------------------------------------------
-Script-2: Duplicate text and count of occurences
------------------------------------------------
-
-
-
-$File = Get-content -Path .\files\iot-edge-module-opc-ua-1m-700065456.json -Force
-
-
-foreach($line in $File){
-$line = $line.trim()
-#if( !($line.contains('{') -or $line.contains('}') )){
-if( $line.contains('name') ){
-	$ind1 = $line.indexOf(':')
-	#$line1=$line.substring(1)
-	$nameval = $line.substring($ind1+1)
-	$nameval1 = $nameval.trim()
-
-	$len = $nameval1.length
-	$nameval2 = $nameval1.substring(1, $len-3)
-	Add-Content -Path .\files\namefiles1\temp-1m-statistics-names.txt -Value $nameval2 -Force
-	#write-Host $nameval2
-}
-}
-
-
-$filesdata = Get-content -Path .\files\namefiles1\temp-1m-statistics-names.txt
-Write-Host "Total number of Names= " $filesdata.length
-
-
-
-
-$sorted_filesdata = $filesdata | sort
-
-$temp = ""
-[int]$counter = 0
-[int]$count=0
-foreach($name in $sorted_filesdata){
-	
-	#if($count -eq 0){$temp = $name}
-	if($counter -ne 0 -and $name -ne $temp){
-		$dup_name=$temp+"#"+$counter
-		Add-Content -Path .\files\namefiles1\1m-statistics-unique-names.txt -Value $dup_name -Force
-		$counter = 0
-		Write-Host "Names: " $dup_name
-		$count++
+LOGIN COMMAND:
+------------------
+Connect-AzureRmAccount OR Login-AzureRmAccount
+Select-AzureRmSubscription -SubscriptionName "*************"
+Get-AzureRmContext | select Subscription
+
+Get-AzureRMSubscription -SubscriptionName "****** Test Stg"
+Get-azureRmSubscription | where Name -eq "***** Dev Test Stg"
+Set-AzureRmContext -SubscriptionId "*************"
+Select-AzureRmSubscription -SubscriptionName "Microsoft Azure Enterprise"
+Get-AzureRmContext | select Subscription
+
+Non-Interactive Login command:
+--------------------------------
+Try {
+	Get-azureRmSubscription | where Name -eq $subscriptionName
+	Select-AzureRmSubscription -SubscriptionName $subscriptionName
+	Get-AzureRmContext | select Subscription
+} Catch {
+	if ($_ -like "*Connect-AzureRmAccount*" -or $_ -like "*valid tenant*") {
+		Login-AzureRmAccount
+		Get-azureRmSubscription | where Name -eq $subscriptionName
+		Select-AzureRmSubscription -SubscriptionName $subscriptionName
+		Get-AzureRmContext | select Subscription
 	}
-	
-	$counter++
-	$temp = $name
 }
-	$dup_name=$temp+"#"+$counter
-	Add-Content -Path .\files\namefiles1\1m-statistics-unique-names.txt -Value $dup_name -Force
-	Write-Host "Names: " $dup_name
-	$count++
 
-Write-Host "Number of Unique Names= " $count++
+Disconnect RM Account:
+-------------------------
+Disconnect-AzureRmAccount
+
+
+Deploy Command:
+
+$template='D:\Works\Projects\Sanford\ARM-Templates\IotHub\CDB-Template.json'
+$parameter='D:\Works\Projects\Sanford\ARM-Templates\IotHub\CDB-Params.json'
+$rg='dep-alerting-cat-rg-01'
+
+New-AzureRmResourceGroupDeployment -Name "deptest" -TemplateFile $template -TemplateParameterFile $parameter -ResourceGroupName $rg
+
+
+-------------------------------------------------------------------------------------------------------
+$rg='dev-rg-01'
+$template='D:\Works\Projects\CaterP\ARMTemplates-Shukkoor\version-2\INT\ARM-RedisCache.json'
+New-AzureRmResourceGroupDeployment -Name "amsintdeployment" -TemplateFile $template  -ResourceGroupName $rg  
+
+
+
+
+
+New-AzureRmResourceGroupDeployment -ResourceGroupName 'myTempRG' -TemplateFile 'D:\ARMDeployAutomation\App-deployment.json'
+New-AzureRmResourceGroupDeployment -ResourceGroupName 'myTempRG' -TemplateFile 'D:\ARMDeployAutomation\App-deployment.json'
+New-AzureRmResourceGroupDeployment -ResourceGroupName 'myTempRG' -TemplateFile 'D:\ARMDeployAutomation\FA-deployment.json' -TemplateParameterFile 'D:\ARMDeployAutomation\FA-parameters.json'
+========================================================================================================================
+
+New-AzureStorageContainer in  Existing Storage Account:
+--------------------------------------------------------
+$storageAccountKey0 = (Get-AzureRmStorageAccountKey -Name "spdeviotsa01" -ResourceGroupName "myTempRG").Value[0]
+$storageAccountContext = New-AzureStorageContext -StorageAccountName "spdeviotsa01" -StorageAccountKey $storageAccountKey0
+New-AzureStorageContainer -Name "blobcontainer1" -Permission Off -Context $storageAccountContext
+
+There are three (3) different options for storage accounts 
+Options are
+1. General Purpose V2 (GPv2) accounts
+2. General Purpose V1 (GPv1) accounts
+3.Blob Storage Accounts
+
+
+INFO: ARM Templates
+--------------------
+SKU: Standard_LRS, Standard_GRS, Standard_ZRS, Premium_LRS
+Access Tier: Hot/Cool/Archive
+Kind: BlobStorage, Storage, StorageV2
+
+ARM Template: Storage Account:
+------------------------------
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+	"storageAccountType": {
+      "type": "string",
+      
+      "metadata": {
+        "description": "Storage Account type"
+      }
+    },
+	"storageName": {
+      "type": "string",
+	  "metadata": {
+        "description": "Storage Account Name"
+      }
+	 },
+	 "storageType": {
+		"type": "string",
+	  "metadata": {
+		"description": "Storage Account Kind"
+      }
+	 },
+	 "BlobAccessTier": {
+		"type": "string"
+	 },
+	 
+	
+	 "reference_container": {
+		"type": "string"
+	 },
+	  "coldpath_container": {
+		"type": "string"
+	 },
+	 "chkpoint_container": {
+		"type": "string"
+	 }
+	 
+  },
+  
+   "variables": {
+      "storageAccountName": "[parameters('storageName')]"
+    },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[variables('storageAccountName')]",
+      "apiVersion": "2017-10-01",
+      "location": "[resourceGroup().location]",
+	  
+      "sku": {
+          "name": "[parameters('storageAccountType')]"
+      },
+      "kind": "[parameters('storageType')]", 
+      "properties": {
+		"accessTier": "[parameters('BlobAccessTier')]"
+      },
+	  
+	  "resources": [
+		
+		{
+			 "name": "[concat('default/', parameters('reference_container'))]",
+			"type": "blobServices/containers",
+			"apiVersion": "2018-03-01-preview",
+			"dependsOn": [
+				"[variables('storageAccountName')]"
+			]
+		},
+		{
+			 "name": "[concat('default/', parameters('coldpath_container'))]",
+			"type": "blobServices/containers",
+			"apiVersion": "2018-03-01-preview",
+			"dependsOn": [
+				"[variables('storageAccountName')]"
+			]
+		},
+		{
+			 "name": "[concat('default/', parameters('chkpoint_container'))]",
+			"type": "blobServices/containers",
+			"apiVersion": "2018-03-01-preview",
+			"dependsOn": [
+				"[variables('storageAccountName')]"
+			]
+		}
+		
+		]
+	  
+    }
+  ],
+  "outputs": {
+      "storageAccountName": {
+          "type": "string",
+          "value": "[variables('storageAccountName')]"
+      }
+  }
+}
+$$$$$$$$$$$$$$$$$$
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+	"storageName": {
+      "value": "aspbilabiiotstorageprod"
+    },
+	"storageAccountType": {
+      "value": "Standard_LRS" 
+    },
+	 "storageType": {
+		"value": "StorageV2"
+	 },
+	 "BlobAccessTier": {
+		"value": "Cool"
+	 },
+	 
+	 
+	 "reference_container": {
+		"value": "referencedata"
+	 },
+	 "coldpath_container": {
+		"value": "iot-messages-coldpath"
+	 },
+	 "chkpoint_container": {
+		"value": "iothub-eventhub-checkpoint"
+	 }
+		
+  }
+}
+=============================================================================================================
+COSMOS Azure CLI Commands:
+----------------------------
+
+PowerShell:
+----------------
+Login-AzureRmAccount
+Get-AzureRmContext | select Subscription
+Install-Module -Name AzureRM.profile -RequiredVersion 5.2.0       	
+Install-Module -Name AzureRM.Resources
+#Install-Module -Name cosmosdb
+# $existingCosmosContext = Get-CosmosContext [Create cosmos db context from RGname, cosmos name]
+
+
+$primaryKey = ConvertTo-SecureString -String '*******************************==' -AsPlainText -Force
+$cosmosDbContext = New-CosmosDbContext -Account 'cosmos123' -ResourceGroup 'myresource'
+New-CosmosDbDatabase -Context $cosmosDbContext -Id 'amsdb'
+$cosmosDbContext = New-CosmosDbContext -Account 'cosmos123' -Database 'amsdb' -ResourceGroup 'myresource'
+New-CosmosDbCollection -Context $cosmosDbContext -Id 'alerts' -OfferThroughput 1000
+New-CosmosDbCollection -Context $cosmosDbContext -Id 'comingdata' -OfferThroughput 1000
+
+
+
+
+---------------------------------------------------------------------------------------------------
+az cosmosdb create 	--name docdb-test --kind GlobalDocumentDB --locations "South Central US"=0 "North Central US"=1 --resource-group mytemptestrg --max-interval 10 --max-staleness-prefix 200 
+az cosmosdb database create --name 'docdb-test' --db-name 'docdb-test-database' --resource-group mytemptestrg
+az cosmosdb collection create --collection-name 'docdb-test-collection' --name 'docdb-test' --db-name 'docdb-test-database' --resource-group mytemptestrg --throughput 400
+az cosmosdb collection update --collection-name 'docdb-test-collection' --name 'docdb-test' --db-name 'docdb-test-database' --resource-group mytemptestrg --throughput 700
+
+
+
+#!/bin/bash
+
+# Set variables for the new account, database, and collection
+resourceGroupName='mytemptestrg01'
+location='eastus'
+name='docdb-test'
+databaseName='docdb-test-database'
+collectionName='docdb-test-collection'
+originalThroughput=400 
+newThroughput=700
+
+# Create a resource group
+az group create \
+	--name $resourceGroupName \
+	--location $location
+
+# Create a DocumentDB API Cosmos DB account
+az cosmosdb create \
+	--name $name \
+	--kind GlobalDocumentDB \
+	--locations "South Central US"=0 "North Central US"=1 \
+	--resource-group $resourceGroupName \
+	--max-interval 10 \
+	--max-staleness-prefix 200 
+
+# Create a database 
+az cosmosdb database create \
+	--name $name \
+	--db-name $databaseName \
+	--resource-group $resourceGroupName
+
+# Create a collection
+az cosmosdb collection create \
+	--collection-name $collectionName \
+	--name $name \
+	--db-name $databaseName \
+	--resource-group $resourceGroupName \
+	--throughput $originalThrougput
+
+# Scale throughput
+az cosmosdb collection update \
+	--collection-name $collectionName \
+	--name $name \
+	--db-name $databaseName \
+	--resource-group $resourceGroupName \
+	--throughput $newThroughput
+
+
+
+
+
+
+
+
+
+
+
 
 
 
