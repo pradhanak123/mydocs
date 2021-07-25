@@ -1,1 +1,10 @@
+https://www.youtube.com/watch?v=vn5BkimNk9g
+Build-Containerize-Deploy Web App to Azure Kubernetes Services | Wriju Ghosh | Global Azure 2021
+#GlobalAzure2021​ #AzConfDev​ #Azure
+
+Build an web application in .Net Core (or anything). Then containerize it. Move this image to a container registry say Azure Container Registry (ACR). Then using this Container image deploy a public facing website in AKS. It is demo only session needs some basic understanding of Web Application, Container and Kubernetes.
+#GlobalAzure2021​ #AzConfDev​ #Azure #Container #Kubernetes #AKS #dotNET
+
+
+https://github.com/wrijugh/GA2021-Wriju-Demo/tree/master/scripts
 
