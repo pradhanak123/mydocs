@@ -1,1 +1,286 @@
 
+Create Web app : Az PowerShell:
+New-AzWebApp -ResourceGroupName Default-Web-WestUS -Name "ContosoSite" -Location "West US" -AppServicePlan "ContosoServicePlan" 
+New-AzWebApp -ResourceGroupName "xtra-test-iotrg" -Name "webajayapp-core-qa-01" -Location "East US" -AppServicePlan "planajayapp01"
+----------------------------------------------------------------------
+SQL ARM Paramters 
+ {
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "sqlServerName": {
+      "value": "asp-bi-lab-iiot-sqlserver-prod",
+    },
+    "databaseName": {
+      "value": "ChamberMonitorDB",
+    },
+    "collation": {
+      "value": "SQL_Latin1_General_CP1_CI_AS",
+    },
+	 "edition": {
+      "value": "Basic",
+    },
+    "maxSizeBytes": {
+      "value": "1073741824",
+    },
+    "sqlAdministratorLogin": {
+      "value": "saadmin",
+    },
+	 "sqlAdministratorLoginPassword": {
+      "value": "SA#admin@123^",
+    },
+    "transparentDataEncryption": {
+      "value": "Enabled",
+    },
+    "zoneRedundant": {
+      "value": false
+    },
+	 "startIpAddress": {
+      "value": "47.30.218.65",
+    },
+    "endIpAddress": {
+      "value": "47.30.218.65",
+    },
+    
+    "subscriptionID": {
+      "value": "a8023c82-a73d-4330-99fb-06ff8f4eeba0",
+    },
+	"sampleName": {
+      "value": "sampletest",
+    }
+  }
+}  
+  ---------------------------
+  SQL-ARM Deploy-template
+  
+   {
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "sqlServerName": {
+      "type": "string",
+      "metadata": {
+        "description": "The SQL Servername."
+      }
+    },
+    "databaseName": {
+      "type": "string",
+      "metadata": {
+        "description": "The SQL Database."
+      }
+    },
+    "collation": {
+      "type": "string",
+      "metadata": {
+        "description": "The Collation of SQL Database and SQL Server.Required=no"
+      }
+    },
+	 "edition": {
+      "type": "string",
+      "metadata": {
+        "description": "The edition of SQL Database."
+      }
+    },
+    "maxSizeBytes": {
+      "type": "string",
+      "metadata": {
+        "description": "The maxsize of SQL Database."
+      }
+    },
+    "sqlDBAdminUser": {
+      "type": "string",
+      "metadata": {
+        "description": "The administrator username of the SQL Server."
+      }
+    },
+	 "sqlDBAdminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The administrator password of the SQL Server."
+      }
+    },
+    "transparentDataEncryption": {
+      "type": "string",
+      "allowedValues": [
+        "Enabled",
+        "Disabled"
+      ],
+      "defaultValue": "Enabled",
+      "metadata": {
+        "description": "Enable or disable Transparent Data Encryption (TDE) for the database."
+      }
+    },
+    "zoneRedundant": {
+      "type": "bool",
+    },
+	 "startIpAddress": {
+      "type": "string",
+      "metadata": {
+        "description": "The start IpAddress"
+      }
+    },
+    "endIpAddress": {
+      "type": "string",
+      "metadata": {
+        "description": "The end IpAddress."
+      }
+    },
+   
+   "sampleName": {
+      "type": "string"
+	 },
+    
+    "subscriptionID": {
+      "type": "string",
+      "metadata": {
+        "description": "The ID of the exisitng azure subscription."
+      }
+    }
+  },
+  
+  "variables": {
+    "sqlServerName": "[parameters('sqlServerName')]",
+    "databaseName": "[parameters('databaseName')]",
+    "databaseEdition": "[parameters('edition')]",
+    "databaseCollation": "[parameters('collation')]",
+    "databaseServiceObjectiveName": "Basic",
+   
+  },
+  
+  "resources": [
+	{
+		  "name": "[variables('sqlServerName')]",
+		  "type": "Microsoft.Sql/servers",
+		  "apiVersion": "2014-04-01-preview",
+		  "location": "[resourceGroup().location]",
+		  "tags": {
+			"displayName": "SqlServer"
+		  },
+		  "properties": {
+			"administratorLogin": "[parameters('sqlDBAdminUser')]",
+			"administratorLoginPassword": "[parameters('sqlDBAdminPassword')]",
+			"version": "12.0"
+		  },
+		  
+		  "resources": [
+        {
+          "name": "[variables('databaseName')]",
+          "type": "databases",
+          "apiVersion": "2015-01-01",
+          "location": "[resourceGroup().location]",
+          "tags": {
+            "displayName": "Database"
+          },
+          "properties": {
+            "edition": "[variables('databaseEdition')]",
+            "collation": "[variables('databaseCollation')]",
+            "requestedServiceObjectiveName": "[variables('databaseServiceObjectiveName')]",
+            "maxSizeBytes": "[parameters('maxSizeBytes')]",
+            "sampleName": "[parameters('sampleName')]",
+            "zoneRedundant": "[parameters('zoneRedundant')]"
+          },
+          "dependsOn": [
+            "[variables('sqlServerName')]"
+          ],
+          "resources": [
+            {
+              "comments": "Transparent Data Encryption",
+              "name": "current",
+              "type": "transparentDataEncryption",
+              "apiVersion": "2014-04-01-preview",
+              "properties": {
+                "status": "[parameters('transparentDataEncryption')]"
+              },
+              "dependsOn": [
+                "[variables('databaseName')]"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "AllowAllMicrosoftAzureIps",
+          "type": "firewallrules",
+          "apiVersion": "2014-04-01",
+          "location": "[resourceGroup().location]",
+          "properties": {
+            "startIpAddress": "[parameters('startIpAddress')]",
+            "endIpAddress": "[parameters('endIpAddress')]"
+          },
+          "dependsOn": [
+            "[variables('sqlServerName')]"
+          ]
+        },
+        
+      ]
+	  
+	 } 
+  ],
+  
+  "outputs": {
+    "sqlServerFqdn": {
+      "type": "string",
+      "value": "[reference(concat('Microsoft.Sql/servers/', variables('sqlServerName'))).fullyQualifiedDomainName]"
+    },
+    "databaseName": {
+      "type": "string",
+      "value": "[variables('databaseName')]"
+    }
+  }
+}
+---------------------------------------------------------
+PowwerShell
+$StorageAccountName="myajaysa001"
+$StorageAccount = (Get-AzureRmStorageAccount | Where-Object{$_.StorageAccountName -eq $StorageAccountName})
+# Copy files from the local storage staging location to the storage account container
+    New-AzureStorageContainer -Name $StorageContainerName -Context $StorageAccount.Context -ErrorAction SilentlyContinue *>&1
+----------------------------
+$TemplateParametersFileContents = Get-Content $TemplateParametersFile -Raw
+$jsonTemplateContent = $TemplateParametersFileContents | ConvertFrom-Json;
+$jsonResourceGroupName = $jsonTemplateContent.parameters.NameOfResourceGroup.value
+
+$JsonParameters = $TemplateParametersFileContents | ConvertFrom-Json
+    if (($JsonParameters | Get-Member -Type NoteProperty 'parameters') -ne $null) {
+        $JsonParameters = $JsonParameters.parameters
+    }
+$OptionalParameters[$ArtifactsLocationName] = $JsonParameters | Select-Object -Expand $ArtifactsLocationName -ErrorAction Ignore | Select-Object -Expand 'value' -ErrorAction Ignore
+---------------------------------------
+$RootFolderForScripts = $PSScriptRoot;
+
+$TagsParametersPath = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, 'parameters.json'))
+$jsonTagsParameters = (Get-Content $TagsParametersPath -Raw) | ConvertFrom-Json;
+
+$Tags =
+@{
+    "projectName"    = $jsonTagsParameters.parameters.ProjectName.value
+    "projectVersion" = $jsonTagsParameters.parameters.ProjectVersion.value
+    "managedBy"      = $jsonTagsParameters.parameters.ManagedBy.value
+    "environment"    = $Environment
+    "businessArea"   = $jsonTagsParameters.parameters.BusinessArea.value
+    ;
+}
+------------------------------------
+function x{
+& '.\DeployStorageAccount.ps1' -DeployEnvironment $Environment -Tags $Tags -TemplateParametersFile $TemplateParametersFile
+}
+----------------------------------------
+$ResourcesMap =
+    @{
+        1 = "India"
+        2 = "Thailand"
+        3 = "Singapore"
+        4 = "Newzealand"
+        5 = "Malaysia"
+        6 = "Russia"
+        7 = "Sout Korea"
+        8 = "Japan"
+        9 = "China"
+		};
+
+------------------------------------
+
+
+
+
+
+
+
