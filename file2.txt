@@ -1,1 +1,275 @@
+Service Bus
+{
+  "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "serviceBusNamespace": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Service Bus namespace"        
+      },
+    },
+	
+	"SBTopicName_alerts": {
+      "type": "string"
+    },
+	"SBTopicName_notification":{
+		"type": "string"
+	},
+	"subscription_alerts_display": {
+      "type": "string"
+    },
+	"subscription_alerts_dev": {
+      "type": "string"
+    },
+	"subscription_alerts_prod": {
+      "type": "string"
+    },
+	"subscription_alerts_stage": {
+      "type": "string"
+    },
+	"subscription_alerts_test": {
+      "type": "string"
+    },
+	"subscription_noification":{
+		"type": "string"
+	},
+	
+  },
+  
+  "variables": {
+    "defaultSASKeyName": "RootManageSharedAccessKey",
+    "authRuleResourceId": "[resourceId('Microsoft.ServiceBus/namespaces/authorizationRules', parameters('serviceBusNamespace'), variables('defaultSASKeyName'))]",
+    "sbVersion": "2017-04-01"
+  },
+  
+  "resources": [
+    {
+      "apiVersion": "2017-04-01",
+      "name": "[parameters('serviceBusNamespace')]",
+      "type": "Microsoft.ServiceBus/Namespaces",
+      "location": "[resourceGroup().location]",
+      
+      "sku": {
+        "name": "Standard"
+      },
+      "properties": {
+
+      },
+		  "resources": [
+							
+				{
+					  "apiVersion": "2017-04-01",
+					  "name": "[parameters('SBTopicName_alerts')]",
+					  "type": "topics",
+					  "dependsOn": [
+						"[concat('Microsoft.ServiceBus/namespaces/', parameters('serviceBusNamespace'))]"
+					  ],
+					  "properties": {
+						"defaultMessageTimeToLive": "P10675199DT2H48M5.4775807S",
+						"maxSizeInMegabytes": "1024",
+						"requiresDuplicateDetection": "false",
+						"duplicateDetectionHistoryTimeWindow": "PT10M",
+						"enableBatchedOperations": "false",
+						"supportOrdering": "false",
+						"autoDeleteOnIdle": "P14DT2H48M5.4775807S",
+						"enablePartitioning": "true",
+						"enableExpress": "false"
+					  },
+			  
+							"resources": [
+							{
+								  "apiVersion": "2017-04-01",
+								  "name": "[parameters('subscription_alerts_display')]",
+								  "type": "Subscriptions",
+								  "dependsOn": [
+									"[parameters('SBTopicName_alerts')]"
+								  ],
+								  "properties": {
+									"lockDuration": "PT30S",
+									"requiresSession": "false",
+									"defaultMessageTimeToLive": "P14DT2H48M5.4775807S",
+									"deadLetteringOnMessageExpiration": "false",
+									"deadLetteringOnFilterEvaluationExceptions":"false",
+									"maxDeliveryCount": "10",
+									"enableBatchedOperations": "false",
+									"autoDeleteOnIdle": "P10675199DT2H48M5.4775807S"
+								  }
+							 },
+							 {
+								  "apiVersion": "2017-04-01",
+								  "name": "[parameters('subscription_alerts_dev')]",
+								  "type": "Subscriptions",
+								  "dependsOn": [
+									"[parameters('SBTopicName_alerts')]"
+								  ],
+								  "properties": {
+									"lockDuration": "PT30S",
+									"requiresSession": "false",
+									"defaultMessageTimeToLive": "P14DT2H48M5.4775807S",
+									"deadLetteringOnMessageExpiration": "false",
+									"deadLetteringOnFilterEvaluationExceptions":"false",
+									"maxDeliveryCount": "10",
+									"enableBatchedOperations": "false",
+									"autoDeleteOnIdle": "P10675199DT2H48M5.4775807S"
+								  }
+							 },
+							 {
+								  "apiVersion": "2017-04-01",
+								  "name": "[parameters('subscription_alerts_prod')]",
+								  "type": "Subscriptions",
+								  "dependsOn": [
+									"[parameters('SBTopicName_alerts')]"
+								  ],
+								  "properties": {
+									"lockDuration": "PT30S",
+									"requiresSession": "false",
+									"defaultMessageTimeToLive": "P14DT2H48M5.4775807S",
+									"deadLetteringOnMessageExpiration": "false",
+									"deadLetteringOnFilterEvaluationExceptions":"false",
+									"maxDeliveryCount": "10",
+									"enableBatchedOperations": "false",
+									"autoDeleteOnIdle": "P10675199DT2H48M5.4775807S"
+								  }
+							 },
+							 {
+								  "apiVersion": "2017-04-01",
+								  "name": "[parameters('subscription_alerts_stage')]",
+								  "type": "Subscriptions",
+								  "dependsOn": [
+									"[parameters('SBTopicName_alerts')]"
+								  ],
+								  "properties": {
+									"lockDuration": "PT30S",
+									"requiresSession": "false",
+									"defaultMessageTimeToLive": "P14DT2H48M5.4775807S",
+									"deadLetteringOnMessageExpiration": "false",
+									"deadLetteringOnFilterEvaluationExceptions":"false",
+									"maxDeliveryCount": "10",
+									"enableBatchedOperations": "false",
+									"autoDeleteOnIdle": "P10675199DT2H48M5.4775807S"
+								  }
+							 },
+							 {
+								  "apiVersion": "2017-04-01",
+								  "name": "[parameters('subscription_alerts_test')]",
+								  "type": "Subscriptions",
+								  "dependsOn": [
+									"[parameters('SBTopicName_alerts')]"
+								  ],
+								  "properties": {
+									"lockDuration": "PT30S",
+									"requiresSession": "false",
+									"defaultMessageTimeToLive": "P14DT2H48M5.4775807S",
+									"deadLetteringOnMessageExpiration": "false",
+									"deadLetteringOnFilterEvaluationExceptions":"false",
+									"maxDeliveryCount": "10",
+									"enableBatchedOperations": "false",
+									"autoDeleteOnIdle": "P10675199DT2H48M5.4775807S"
+								  }
+							 },
+							 
+							]
+				  },
+				  {
+					  "apiVersion": "2017-04-01",
+					  "name": "[parameters('SBTopicName_notification')]",
+					  "type": "topics",
+					  "dependsOn": [
+						"[concat('Microsoft.ServiceBus/namespaces/', parameters('serviceBusNamespace'))]"
+					  ],
+					  "properties": {
+						"defaultMessageTimeToLive": "P14DT2H48M5.4775807S",
+						"maxSizeInMegabytes": "1024",
+						"requiresDuplicateDetection": "false",
+						"duplicateDetectionHistoryTimeWindow": "PT10M",
+						"enableBatchedOperations": "false",
+						"supportOrdering": "false",
+						"autoDeleteOnIdle": "P10675199DT2H48M5.4775807S",
+						"enablePartitioning": "true",
+						"enableExpress": "false"
+					  },
+					  "resources": [
+							{
+								  "apiVersion": "2017-04-01",
+								  "name": "[parameters('subscription_noification')]",
+								  "type": "Subscriptions",
+								  "dependsOn": [
+									"[parameters('SBTopicName_notification')]"
+								  ],
+								  "properties": {
+									"lockDuration": "PT30S",
+									"requiresSession": "false",
+									"defaultMessageTimeToLive": "P14DT2H48M5.4775807S",
+									"deadLetteringOnMessageExpiration": "false",
+									"deadLetteringOnFilterEvaluationExceptions":"false",
+									"maxDeliveryCount": "10",
+									"enableBatchedOperations": "false",
+									"autoDeleteOnIdle": "P10675199DT2H48M5.4775807S"
+								  }
+							 }
+							 
+						]
+				  }
+				  
+				  
+				]
+		}	
+		
+		],
+  
+  
+	  "outputs": {
+		"NamespaceConnectionString": {
+		  "type": "string",
+		  "value": "[listkeys(variables('authRuleResourceId'), variables('sbVersion')).primaryConnectionString]"
+		},
+		"SharedAccessPolicyPrimaryKey": {
+		  "type": "string",
+		  "value": "[listkeys(variables('authRuleResourceId'), variables('sbVersion')).primaryKey]"
+		}
+	  }
+}
+-----------------------------------------------------------------
+
+param
+{
+  "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "serviceBusNamespace": {
+      "value": "ASP-BI-Lab-IIOT-SBNamespace-prod" 
+    },
+   
+	"SBTopicName_alerts": {
+      "value": "realtimealerts" 
+    },
+	"SBTopicName_notification":{
+		"value":"streamanalyticsnotification"
+	},
+	"subscription_alerts_display": {
+      "value": "realtimealertsdisplay" 
+    },
+	"subscription_alerts_dev": {
+      "value": "realtimealertsdisplay-development" 
+    },
+	"subscription_alerts_prod": {
+      "value": "realtimealertsdisplay-production" 
+    },
+	"subscription_alerts_stage": {
+      "value": "realtimealertsdisplay-staging" 
+    },
+	"subscription_alerts_test": {
+      "value": "realtimealertsdisplay-testing" 
+    },
+	"subscription_noification":{
+		"value": "SANotificationSubscription"
+	},
+	
+	
+  }
+
+}
+----------------------------------------------
+
 
